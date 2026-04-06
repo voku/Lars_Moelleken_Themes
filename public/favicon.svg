@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Lars Moelleken favicon</title>
+  <desc id="desc">Dark square icon with LM initials and a cyan accent bar.</desc>
+  <rect width="64" height="64" rx="14" fill="#0f172a" />
+  <rect x="10" y="10" width="6" height="44" rx="3" fill="#22d3ee" />
+  <path d="M24 16h6v26h14v6H24V16Zm24 0h6l6 10 6-10h6v32h-6V27l-6 10-6-10v21h-6V16Z" fill="#f8fafc" transform="translate(-8 0)" />
+</svg>
