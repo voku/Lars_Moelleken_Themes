@@ -1,11 +1,49 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
-import { Layers, Wrench, TerminalSquare, Cpu, Code2, Shield, Database, GitBranch, ChevronDown, Github, Zap, FileText, Globe, Cloud, Briefcase, AlertTriangle, Lock, Eye, Building, Puzzle, Users, Link, Menu, X, Palette } from 'lucide-react';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'motion/react';
+import { Layers, Wrench, TerminalSquare, Cpu, Code2, Shield, Database, GitBranch, ChevronDown, Github, Zap, FileText, Globe, Cloud, Briefcase, AlertTriangle, Lock, Eye, Building, Puzzle, Users, Link, Menu, X, Palette, Settings } from 'lucide-react';
 
 const themesList = [
   'theme-bttf', 'theme-retro', 'theme-architect', 'theme-php', 
   'theme-resume', 'theme-linux', 'theme-intel', 'theme-cyberpunk'
 ];
+
+const themeDisplayNames: Record<string, string> = {
+  'theme-bttf': 'BTTF',
+  'theme-retro': 'Retro',
+  'theme-architect': 'Architect',
+  'theme-php': 'PHP',
+  'theme-resume': 'Resume',
+  'theme-linux': 'Linux',
+  'theme-intel': 'Intel',
+  'theme-cyberpunk': 'Cyberpunk',
+};
+
+const themeColors: Record<string, { bg: string, primary: string }> = {
+  'theme-bttf': { bg: '#0a0a16', primary: '#f000ff' },
+  'theme-retro': { bg: '#0000a8', primary: '#ffffff' },
+  'theme-architect': { bg: '#f8fafc', primary: '#3b82f6' },
+  'theme-php': { bg: '#3e4c7a', primary: '#8892BF' },
+  'theme-resume': { bg: '#1e293b', primary: '#38bdf8' },
+  'theme-linux': { bg: '#000000', primary: '#00ff00' },
+  'theme-intel': { bg: '#050505', primary: '#ff0055' },
+  'theme-cyberpunk': { bg: '#0a0a0c', primary: '#ff0055' },
+};
+
+function buildRandomThemeMap(): Record<string, string> {
+  const map: Record<string, string> = {};
+  sections.forEach((s) => {
+    map[s.id] = themesList[Math.floor(Math.random() * themesList.length)];
+  });
+  return map;
+}
+
+function buildUniformThemeMap(theme: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  sections.forEach((s) => {
+    map[s.id] = theme;
+  });
+  return map;
+}
 
 const sections = [
   { id: 'hero', name: 'Identity' },
@@ -64,9 +102,12 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const [isManualScroll, setIsManualScroll] = useState(false);
   const [isAutoThemeEnabled, setIsAutoThemeEnabled] = useState(false);
+  const [sectionThemeMap, setSectionThemeMap] = useState<Record<string, string>>(() => buildUniformThemeMap('theme-architect'));
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const ratios = useRef<Record<string, number>>({});
   const activeSectionRef = useRef(activeSection);
   const autoThemeRef = useRef(isAutoThemeEnabled);
+  const sectionThemeMapRef = useRef(sectionThemeMap);
 
   useEffect(() => {
     activeSectionRef.current = activeSection;
@@ -76,15 +117,39 @@ export default function App() {
     autoThemeRef.current = isAutoThemeEnabled;
   }, [isAutoThemeEnabled]);
 
+  useEffect(() => {
+    sectionThemeMapRef.current = sectionThemeMap;
+  }, [sectionThemeMap]);
+
   const toggleAutoTheme = () => {
     const newState = !isAutoThemeEnabled;
     setIsAutoThemeEnabled(newState);
     if (newState) {
-      const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-      setActiveTheme(randomTheme);
+      const newMap = buildRandomThemeMap();
+      setSectionThemeMap(newMap);
+      setActiveTheme(newMap[activeSectionRef.current] || themesList[0]);
     } else {
+      const newMap = buildUniformThemeMap('theme-architect');
+      setSectionThemeMap(newMap);
       setActiveTheme('theme-architect');
     }
+  };
+
+  const handleSectionThemeChange = (sectionId: string, theme: string) => {
+    setSectionThemeMap(prev => {
+      const updated = { ...prev, [sectionId]: theme };
+      if (sectionId === activeSectionRef.current) {
+        setActiveTheme(theme);
+      }
+      return updated;
+    });
+  };
+
+  const handleRandomizeAll = () => {
+    const newMap = buildRandomThemeMap();
+    setSectionThemeMap(newMap);
+    setIsAutoThemeEnabled(true);
+    setActiveTheme(newMap[activeSectionRef.current] || themesList[0]);
   };
 
   useEffect(() => {
@@ -111,8 +176,10 @@ export default function App() {
           const currentSection = sections.find((s) => s.id === targetId);
           if (currentSection) {
             if (autoThemeRef.current) {
-              const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-              setActiveTheme(randomTheme);
+              const mappedTheme = sectionThemeMapRef.current[targetId];
+              if (mappedTheme) {
+                setActiveTheme(mappedTheme);
+              }
             }
             setActiveSection(currentSection.id);
           }
@@ -136,8 +203,10 @@ export default function App() {
     setIsManualScroll(true);
     setActiveSection(id);
     if (isAutoThemeEnabled) {
-      const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-      setActiveTheme(randomTheme);
+      const mappedTheme = sectionThemeMapRef.current[id];
+      if (mappedTheme) {
+        setActiveTheme(mappedTheme);
+      }
     }
     
     const element = document.getElementById(id);
@@ -168,20 +237,158 @@ export default function App() {
         <p>© {new Date().getFullYear()} Lars Moelleken. All systems operational.</p>
       </footer>
       
-      {/* Floating Theme Toggle */}
-      <button
-        onClick={toggleAutoTheme}
-        className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-          isAutoThemeEnabled 
-            ? 'bg-[var(--theme-primary)] text-[var(--theme-bg)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
-            : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
-        }`}
-        aria-label={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
-        title={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
-      >
-        <Palette size={24} className={isAutoThemeEnabled ? 'animate-pulse' : ''} />
-      </button>
+      {/* Floating Theme Controls */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        <button
+          onClick={() => setIsConfigOpen(true)}
+          className={`p-3 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            isAutoThemeEnabled 
+              ? 'bg-[var(--theme-bg)] text-[var(--theme-primary)] border-2 border-[var(--theme-primary)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
+              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
+          }`}
+          aria-label="Open theme configuration"
+          title="Theme configuration"
+        >
+          <Settings size={20} />
+        </button>
+        <button
+          onClick={toggleAutoTheme}
+          className={`p-4 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            isAutoThemeEnabled 
+              ? 'bg-[var(--theme-primary)] text-[var(--theme-bg)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
+              : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
+          }`}
+          aria-label={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
+          title={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
+        >
+          <Palette size={24} className={isAutoThemeEnabled ? 'animate-pulse' : ''} />
+        </button>
+      </div>
+
+      {/* Theme Configuration Overlay */}
+      <AnimatePresence>
+        {isConfigOpen && (
+          <ThemeConfigOverlay
+            sectionThemeMap={sectionThemeMap}
+            isAutoThemeEnabled={isAutoThemeEnabled}
+            onSectionThemeChange={handleSectionThemeChange}
+            onRandomizeAll={handleRandomizeAll}
+            onClose={() => setIsConfigOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function ThemeConfigOverlay({ 
+  sectionThemeMap, 
+  isAutoThemeEnabled,
+  onSectionThemeChange, 
+  onRandomizeAll, 
+  onClose 
+}: { 
+  sectionThemeMap: Record<string, string>,
+  isAutoThemeEnabled: boolean,
+  onSectionThemeChange: (sectionId: string, theme: string) => void,
+  onRandomizeAll: () => void,
+  onClose: () => void 
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-auto"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-700 sticky top-0 bg-slate-900 z-10 rounded-t-2xl">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Palette size={20} className="text-blue-400" /> Theme Configuration
+            </h3>
+            <p className="text-sm text-slate-400 mt-1">Assign a theme to each section</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onRandomizeAll}
+              className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              title="Randomize all section themes"
+            >
+              Randomize
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              aria-label="Close configuration"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="px-5 py-3 border-b border-slate-800">
+          <div className={`text-xs font-mono px-2 py-1 rounded inline-block ${isAutoThemeEnabled ? 'bg-green-900/50 text-green-400' : 'bg-slate-800 text-slate-500'}`}>
+            {isAutoThemeEnabled ? '● Auto-switching ON — themes change as you scroll' : '○ Auto-switching OFF — toggle via palette button'}
+          </div>
+        </div>
+
+        {/* Matrix */}
+        <div className="p-5">
+          <div className="space-y-3">
+            {sections.map((section) => (
+              <div key={section.id} className="flex items-center gap-3">
+                <div className="w-28 shrink-0 text-sm font-medium text-slate-300 truncate" title={section.name}>
+                  {section.name}
+                </div>
+                <div className="flex flex-wrap gap-1.5 flex-1">
+                  {themesList.map((theme) => {
+                    const isSelected = sectionThemeMap[section.id] === theme;
+                    const colors = themeColors[theme];
+                    return (
+                      <button
+                        key={theme}
+                        onClick={() => onSectionThemeChange(section.id, theme)}
+                        className={`px-2.5 py-1 text-xs rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                          isSelected 
+                            ? 'ring-2 ring-blue-400 font-bold scale-105' 
+                            : 'opacity-60 hover:opacity-100 hover:scale-105'
+                        }`}
+                        style={{
+                          backgroundColor: colors.bg,
+                          color: colors.primary,
+                          border: `1px solid ${isSelected ? colors.primary : 'rgba(255,255,255,0.15)'}`,
+                        }}
+                        title={`Set ${section.name} to ${themeDisplayNames[theme]}`}
+                        aria-pressed={isSelected}
+                      >
+                        {themeDisplayNames[theme]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer hint */}
+        <div className="px-5 py-3 border-t border-slate-800 text-xs text-slate-500 text-center">
+          Click a theme for each section · Use <strong>Randomize</strong> to shuffle · Toggle auto-switch with the <Palette size={12} className="inline" /> button
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
