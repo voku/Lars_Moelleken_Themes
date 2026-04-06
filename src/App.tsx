@@ -385,7 +385,7 @@ function ThemeConfigOverlay({
 
         {/* Footer hint */}
         <div className="px-5 py-3 border-t border-slate-800 text-xs text-slate-500 text-center">
-          Click a theme for each section · Use <strong>Randomize</strong> to shuffle · Toggle auto-switch with the <Palette size={12} className="inline" /> button
+          Click a theme for each section · Use <strong>Randomize</strong> to shuffle · Toggle auto-switch with the <Palette size={12} className="inline" aria-hidden="true" /> button
         </div>
       </motion.div>
     </motion.div>
@@ -709,7 +709,7 @@ function OpenSourceSection() {
           transition={{ delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-[var(--theme-primary)] hover:text-[var(--theme-bg)] hover:border-[var(--theme-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2" aria-label="View GitHub Profile (opens in a new tab)">
+          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-[var(--theme-primary)] hover:text-[var(--theme-bg)] hover:border-[var(--theme-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current" aria-label="View GitHub Profile (opens in a new tab)">
             <Github size={20} aria-hidden="true" /> View GitHub Profile
           </a>
         </motion.div>
@@ -966,7 +966,7 @@ function CyberpunkSection() {
               <h3 className="text-2xl font-bold">Static Analysis ICE</h3>
             </div>
             <p className="mb-4 opacity-80">Deploying automated scripts to build impenetrable code quality defenses.</p>
-            <div className="code-block bg-black/50 p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
+            <div className="code-block p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
               {`> INITIALIZING PHPSTAN LEVEL 9...
 > DEPLOYING RECTOR AUTOMATION...
 > ENFORCING STRICT TYPES...
