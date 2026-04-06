@@ -26,6 +26,16 @@
   @apply transition-all duration-300 ease-in-out;
 }
 
+/* Default subtle background - works on dark themes */
+.subtle-bg {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Default code block */
+.code-block {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 /* BTTF Theme */
 .theme-bttf {
   --theme-bg: #0a0a16;
@@ -88,10 +98,36 @@
   color: #0f172a;
 }
 
+.theme-architect h3 {
+  color: #0f172a;
+}
+
 .theme-architect .card-bg {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  color: #334155;
+}
+
+.theme-architect .card-bg h3 {
+  color: #0f172a;
+}
+
+.theme-architect .card-bg a {
+  color: #3b82f6;
+}
+
+.theme-architect .card-bg a:hover {
+  color: #1d4ed8;
+}
+
+.theme-architect .subtle-bg {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.theme-architect .code-block {
+  background: #1e293b;
+  color: #38bdf8;
 }
 
 /* PHP Theme */

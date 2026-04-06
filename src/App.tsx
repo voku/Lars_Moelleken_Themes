@@ -1,11 +1,49 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
-import { Layers, Wrench, TerminalSquare, Cpu, Code2, Shield, Database, GitBranch, ChevronDown, Github, Zap, FileText, Globe, Cloud, Briefcase, AlertTriangle, Lock, Eye, Building, Puzzle, Users, Link, Menu, X, Palette } from 'lucide-react';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'motion/react';
+import { Layers, Wrench, TerminalSquare, Cpu, Code2, Shield, Database, GitBranch, ChevronDown, Github, Zap, FileText, Globe, Cloud, Briefcase, AlertTriangle, Lock, Eye, Building, Puzzle, Users, Link, Menu, X, Palette, Settings } from 'lucide-react';
 
 const themesList = [
   'theme-bttf', 'theme-retro', 'theme-architect', 'theme-php', 
   'theme-resume', 'theme-linux', 'theme-intel', 'theme-cyberpunk'
 ];
+
+const themeDisplayNames: Record<string, string> = {
+  'theme-bttf': 'BTTF',
+  'theme-retro': 'Retro',
+  'theme-architect': 'Architect',
+  'theme-php': 'PHP',
+  'theme-resume': 'Resume',
+  'theme-linux': 'Linux',
+  'theme-intel': 'Intel',
+  'theme-cyberpunk': 'Cyberpunk',
+};
+
+const themeColors: Record<string, { bg: string, primary: string }> = {
+  'theme-bttf': { bg: '#0a0a16', primary: '#f000ff' },
+  'theme-retro': { bg: '#0000a8', primary: '#ffffff' },
+  'theme-architect': { bg: '#f8fafc', primary: '#3b82f6' },
+  'theme-php': { bg: '#3e4c7a', primary: '#8892BF' },
+  'theme-resume': { bg: '#1e293b', primary: '#38bdf8' },
+  'theme-linux': { bg: '#000000', primary: '#00ff00' },
+  'theme-intel': { bg: '#050505', primary: '#ff0055' },
+  'theme-cyberpunk': { bg: '#0a0a0c', primary: '#ff0055' },
+};
+
+function buildRandomThemeMap(): Record<string, string> {
+  const map: Record<string, string> = {};
+  sections.forEach((s) => {
+    map[s.id] = themesList[Math.floor(Math.random() * themesList.length)];
+  });
+  return map;
+}
+
+function buildUniformThemeMap(theme: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  sections.forEach((s) => {
+    map[s.id] = theme;
+  });
+  return map;
+}
 
 const sections = [
   { id: 'hero', name: 'Identity' },
@@ -64,9 +102,12 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const [isManualScroll, setIsManualScroll] = useState(false);
   const [isAutoThemeEnabled, setIsAutoThemeEnabled] = useState(false);
+  const [sectionThemeMap, setSectionThemeMap] = useState<Record<string, string>>(() => buildUniformThemeMap('theme-architect'));
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const ratios = useRef<Record<string, number>>({});
   const activeSectionRef = useRef(activeSection);
   const autoThemeRef = useRef(isAutoThemeEnabled);
+  const sectionThemeMapRef = useRef(sectionThemeMap);
 
   useEffect(() => {
     activeSectionRef.current = activeSection;
@@ -76,15 +117,39 @@ export default function App() {
     autoThemeRef.current = isAutoThemeEnabled;
   }, [isAutoThemeEnabled]);
 
+  useEffect(() => {
+    sectionThemeMapRef.current = sectionThemeMap;
+  }, [sectionThemeMap]);
+
   const toggleAutoTheme = () => {
     const newState = !isAutoThemeEnabled;
     setIsAutoThemeEnabled(newState);
     if (newState) {
-      const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-      setActiveTheme(randomTheme);
+      const newMap = buildRandomThemeMap();
+      setSectionThemeMap(newMap);
+      setActiveTheme(newMap[activeSectionRef.current] || themesList[0]);
     } else {
+      const newMap = buildUniformThemeMap('theme-architect');
+      setSectionThemeMap(newMap);
       setActiveTheme('theme-architect');
     }
+  };
+
+  const handleSectionThemeChange = (sectionId: string, theme: string) => {
+    setSectionThemeMap(prev => {
+      const updated = { ...prev, [sectionId]: theme };
+      if (sectionId === activeSectionRef.current) {
+        setActiveTheme(theme);
+      }
+      return updated;
+    });
+  };
+
+  const handleRandomizeAll = () => {
+    const newMap = buildRandomThemeMap();
+    setSectionThemeMap(newMap);
+    setIsAutoThemeEnabled(true);
+    setActiveTheme(newMap[activeSectionRef.current] || themesList[0]);
   };
 
   useEffect(() => {
@@ -111,8 +176,10 @@ export default function App() {
           const currentSection = sections.find((s) => s.id === targetId);
           if (currentSection) {
             if (autoThemeRef.current) {
-              const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-              setActiveTheme(randomTheme);
+              const mappedTheme = sectionThemeMapRef.current[targetId];
+              if (mappedTheme) {
+                setActiveTheme(mappedTheme);
+              }
             }
             setActiveSection(currentSection.id);
           }
@@ -136,8 +203,10 @@ export default function App() {
     setIsManualScroll(true);
     setActiveSection(id);
     if (isAutoThemeEnabled) {
-      const randomTheme = themesList[Math.floor(Math.random() * themesList.length)];
-      setActiveTheme(randomTheme);
+      const mappedTheme = sectionThemeMapRef.current[id];
+      if (mappedTheme) {
+        setActiveTheme(mappedTheme);
+      }
     }
     
     const element = document.getElementById(id);
@@ -168,20 +237,158 @@ export default function App() {
         <p>© {new Date().getFullYear()} Lars Moelleken. All systems operational.</p>
       </footer>
       
-      {/* Floating Theme Toggle */}
-      <button
-        onClick={toggleAutoTheme}
-        className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-          isAutoThemeEnabled 
-            ? 'bg-[var(--theme-primary)] text-[var(--theme-bg)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
-            : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
-        }`}
-        aria-label={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
-        title={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
-      >
-        <Palette size={24} className={isAutoThemeEnabled ? 'animate-pulse' : ''} />
-      </button>
+      {/* Floating Theme Controls */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+        <button
+          onClick={() => setIsConfigOpen(true)}
+          className={`p-3 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            isAutoThemeEnabled 
+              ? 'bg-[var(--theme-bg)] text-[var(--theme-primary)] border-2 border-[var(--theme-primary)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
+              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
+          }`}
+          aria-label="Open theme configuration"
+          title="Theme configuration"
+        >
+          <Settings size={20} />
+        </button>
+        <button
+          onClick={toggleAutoTheme}
+          className={`p-4 rounded-full shadow-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            isAutoThemeEnabled 
+              ? 'bg-[var(--theme-primary)] text-[var(--theme-bg)] hover:scale-110 focus-visible:ring-[var(--theme-primary)]' 
+              : 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200 focus-visible:ring-slate-400'
+          }`}
+          aria-label={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
+          title={isAutoThemeEnabled ? "Disable auto theme switching" : "Enable auto theme switching"}
+        >
+          <Palette size={24} className={isAutoThemeEnabled ? 'animate-pulse' : ''} />
+        </button>
+      </div>
+
+      {/* Theme Configuration Overlay */}
+      <AnimatePresence>
+        {isConfigOpen && (
+          <ThemeConfigOverlay
+            sectionThemeMap={sectionThemeMap}
+            isAutoThemeEnabled={isAutoThemeEnabled}
+            onSectionThemeChange={handleSectionThemeChange}
+            onRandomizeAll={handleRandomizeAll}
+            onClose={() => setIsConfigOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function ThemeConfigOverlay({ 
+  sectionThemeMap, 
+  isAutoThemeEnabled,
+  onSectionThemeChange, 
+  onRandomizeAll, 
+  onClose 
+}: { 
+  sectionThemeMap: Record<string, string>,
+  isAutoThemeEnabled: boolean,
+  onSectionThemeChange: (sectionId: string, theme: string) => void,
+  onRandomizeAll: () => void,
+  onClose: () => void 
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-auto"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-700 sticky top-0 bg-slate-900 z-10 rounded-t-2xl">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Palette size={20} className="text-blue-400" /> Theme Configuration
+            </h3>
+            <p className="text-sm text-slate-400 mt-1">Assign a theme to each section</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onRandomizeAll}
+              className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              title="Randomize all section themes"
+            >
+              Randomize
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              aria-label="Close configuration"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="px-5 py-3 border-b border-slate-800">
+          <div className={`text-xs font-mono px-2 py-1 rounded inline-block ${isAutoThemeEnabled ? 'bg-green-900/50 text-green-400' : 'bg-slate-800 text-slate-500'}`}>
+            {isAutoThemeEnabled ? '● Auto-switching ON — themes change as you scroll' : '○ Auto-switching OFF — toggle via palette button'}
+          </div>
+        </div>
+
+        {/* Matrix */}
+        <div className="p-5">
+          <div className="space-y-3">
+            {sections.map((section) => (
+              <div key={section.id} className="flex items-center gap-3">
+                <div className="w-28 shrink-0 text-sm font-medium text-slate-300 truncate" title={section.name}>
+                  {section.name}
+                </div>
+                <div className="flex flex-wrap gap-1.5 flex-1">
+                  {themesList.map((theme) => {
+                    const isSelected = sectionThemeMap[section.id] === theme;
+                    const colors = themeColors[theme];
+                    return (
+                      <button
+                        key={theme}
+                        onClick={() => onSectionThemeChange(section.id, theme)}
+                        className={`px-2.5 py-1 text-xs rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                          isSelected 
+                            ? 'ring-2 ring-blue-400 font-bold scale-105' 
+                            : 'opacity-60 hover:opacity-100 hover:scale-105'
+                        }`}
+                        style={{
+                          backgroundColor: colors.bg,
+                          color: colors.primary,
+                          border: `1px solid ${isSelected ? colors.primary : 'rgba(255,255,255,0.15)'}`,
+                        }}
+                        title={`Set ${section.name} to ${themeDisplayNames[theme]}`}
+                        aria-pressed={isSelected}
+                      >
+                        {themeDisplayNames[theme]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer hint */}
+        <div className="px-5 py-3 border-t border-slate-800 text-xs text-slate-500 text-center">
+          Click a theme for each section · Use <strong>Randomize</strong> to shuffle · Toggle auto-switch with the <Palette size={12} className="inline" aria-hidden="true" /> button
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -309,8 +516,8 @@ function HeroSection() {
         </motion.h1>
         
         <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-12">
-          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-white/10 transition-colors cursor-default backdrop-blur-sm">Open Source Maintainer</span>
-          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-white/10 transition-colors cursor-default backdrop-blur-sm">Engineering Workflow Designer</span>
+          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-[var(--theme-primary)]/10 transition-colors cursor-default backdrop-blur-sm">Open Source Maintainer</span>
+          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-[var(--theme-primary)]/10 transition-colors cursor-default backdrop-blur-sm">Engineering Workflow Designer</span>
         </motion.div>
 
         <motion.p variants={itemVariants} className="text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto border-l-4 border-current pl-6 text-left italic opacity-90 backdrop-blur-sm">
@@ -355,12 +562,12 @@ function AboutSection() {
             viewport={{ once: true }}
             className="card-bg p-8"
           >
-            <h3 className="text-2xl font-bold mb-6 text-white border-b border-current pb-2">SYSTEM.INFO</h3>
+            <h3 className="text-2xl font-bold mb-6 text-[var(--theme-text)] border-b border-current pb-2">SYSTEM.INFO</h3>
             <ul className="space-y-4">
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">BORN:</span> 1987</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">LOCATION:</span> Voerde, Germany</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">CURRENT ROLE:</span> Senior Software Developer (PHP) at REMONDIS IT Services GmbH & Co. KG</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">TECH STACK:</span> PHP (5–8), MySQL, PostgreSQL, Symfony, REST APIs, JavaScript, CSS3, HTML5, Git, Linux, CI/CD</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">BORN:</span> 1987</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">LOCATION:</span> Voerde, Germany</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">CURRENT ROLE:</span> Senior Software Developer (PHP) at REMONDIS IT Services GmbH & Co. KG</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">TECH STACK:</span> PHP (5–8), MySQL, PostgreSQL, Symfony, REST APIs, JavaScript, CSS3, HTML5, Git, Linux, CI/CD</li>
             </ul>
           </motion.div>
 
@@ -370,13 +577,13 @@ function AboutSection() {
             viewport={{ once: true }}
             className="card-bg p-8"
           >
-            <h3 className="text-2xl font-bold mb-6 text-white border-b border-current pb-2">REFERENCES.LNK</h3>
+            <h3 className="text-2xl font-bold mb-6 text-[var(--theme-text)] border-b border-current pb-2">REFERENCES.LNK</h3>
             <ul className="space-y-4">
-              <li><a href="http://suckup.de/about/" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="Über mich (Blog) (opens in a new tab)"><Link size={16} aria-hidden="true" /> Über mich (Blog)</a></li>
-              <li><a href="https://www.xing.com/profile/Lars_Moelleken" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="XING Profile (opens in a new tab)"><Link size={16} aria-hidden="true" /> XING Profile</a></li>
-              <li><a href="https://github.com/voku/" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="GitHub (@voku) (opens in a new tab)"><Github size={16} aria-hidden="true" /> GitHub (@voku)</a></li>
-              <li><a href="https://de.linkedin.com/company/remondis-it" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="REMONDIS IT (opens in a new tab)"><Link size={16} aria-hidden="true" /> REMONDIS IT</a></li>
-              <li><a href="https://www.youtube.com/c/LarsMoelleken/videos" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="YouTube Channel (opens in a new tab)"><Link size={16} aria-hidden="true" /> YouTube Channel</a></li>
+              <li><a href="http://suckup.de/about/" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="Über mich (Blog) (opens in a new tab)"><Link size={16} aria-hidden="true" /> Über mich (Blog)</a></li>
+              <li><a href="https://www.xing.com/profile/Lars_Moelleken" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="XING Profile (opens in a new tab)"><Link size={16} aria-hidden="true" /> XING Profile</a></li>
+              <li><a href="https://github.com/voku/" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="GitHub (@voku) (opens in a new tab)"><Github size={16} aria-hidden="true" /> GitHub (@voku)</a></li>
+              <li><a href="https://de.linkedin.com/company/remondis-it" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="REMONDIS IT (opens in a new tab)"><Link size={16} aria-hidden="true" /> REMONDIS IT</a></li>
+              <li><a href="https://www.youtube.com/c/LarsMoelleken/videos" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="YouTube Channel (opens in a new tab)"><Link size={16} aria-hidden="true" /> YouTube Channel</a></li>
             </ul>
           </motion.div>
         </div>
@@ -502,7 +709,7 @@ function OpenSourceSection() {
           transition={{ delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900" aria-label="View GitHub Profile (opens in a new tab)">
+          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-[var(--theme-primary)] hover:text-[var(--theme-bg)] hover:border-[var(--theme-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current" aria-label="View GitHub Profile (opens in a new tab)">
             <Github size={20} aria-hidden="true" /> View GitHub Profile
           </a>
         </motion.div>
@@ -524,12 +731,12 @@ function ProjectCard({ icon, title, desc, tags, stats, index }: { icon: React.Re
     >
       <div className="flex items-center justify-between mb-4 w-full">
         <motion.div 
-          className="opacity-80 group-hover:opacity-100 transition-opacity p-3 bg-white/5 rounded-xl"
+          className="opacity-80 group-hover:opacity-100 transition-opacity p-3 subtle-bg rounded-xl"
           whileHover={{ rotate: [0, -10, 10, -10, 0], transition: { duration: 0.5 } }}
         >
           {icon}
         </motion.div>
-        <div className="text-xs font-mono opacity-60 bg-white/10 px-3 py-1 rounded-full">{stats}</div>
+        <div className="text-xs font-mono opacity-60 subtle-bg px-3 py-1 rounded-full">{stats}</div>
       </div>
       <h3 className="text-xl font-bold mb-2 group-hover:text-current transition-colors">{title}</h3>
       <p className="opacity-70 text-sm mb-6 flex-grow leading-relaxed">{desc}</p>
@@ -551,13 +758,13 @@ function ExperienceCard({ title, company, period, icon, details, impact }: { tit
       transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
       className="card-bg p-8 rounded-2xl flex flex-col md:flex-row gap-6 items-start group"
     >
-      <div className="opacity-80 p-4 bg-white/5 rounded-xl shrink-0 mt-1">
+      <div className="opacity-80 p-4 subtle-bg rounded-xl shrink-0 mt-1">
         {icon}
       </div>
       <div className="flex-grow">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
           <h3 className="text-2xl font-bold group-hover:text-current transition-colors">{title}</h3>
-          <span className="text-sm font-mono opacity-60 bg-white/10 px-3 py-1 rounded-full mt-2 md:mt-0 self-start md:self-auto">{period}</span>
+          <span className="text-sm font-mono opacity-60 subtle-bg px-3 py-1 rounded-full mt-2 md:mt-0 self-start md:self-auto">{period}</span>
         </div>
         <h4 className="text-lg opacity-90 mb-4 font-semibold">{company}</h4>
         <ul className="list-disc list-inside space-y-2 opacity-80 mb-6 text-sm leading-relaxed">
@@ -565,7 +772,7 @@ function ExperienceCard({ title, company, period, icon, details, impact }: { tit
             <li key={idx}>{detail}</li>
           ))}
         </ul>
-        <div className="bg-white/5 p-4 rounded-lg border border-current/10">
+        <div className="subtle-bg p-4 rounded-lg border border-current/10">
           <p className="text-sm font-medium"><span className="opacity-60 uppercase tracking-wider text-xs mr-2">Impact:</span> {impact}</p>
         </div>
       </div>
@@ -584,7 +791,7 @@ function WhyHireSection() {
           transition={{ duration: 0.4 }}
           className="mb-16"
         >
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 border-b-4 border-black pb-4 inline-block">WHY HIRE LARS?</h2>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 border-b-4 border-current pb-4 inline-block">WHY HIRE LARS?</h2>
           <p className="text-2xl font-bold max-w-3xl mb-12">Not just a coder, but a builder of reliable, scalable, and future-proof systems.</p>
         </motion.div>
 
@@ -759,7 +966,7 @@ function CyberpunkSection() {
               <h3 className="text-2xl font-bold">Static Analysis ICE</h3>
             </div>
             <p className="mb-4 opacity-80">Deploying automated scripts to build impenetrable code quality defenses.</p>
-            <div className="bg-black/50 p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
+            <div className="code-block p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
               {`> INITIALIZING PHPSTAN LEVEL 9...
 > DEPLOYING RECTOR AUTOMATION...
 > ENFORCING STRICT TYPES...
@@ -839,13 +1046,13 @@ function EngineeringSection() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="mt-12 pt-8 border-t border-green-900/50"
+              className="mt-12 pt-8 border-t border-[var(--theme-primary)]/30"
             >
               <p className="opacity-70 font-mono text-sm leading-relaxed">
                 /* Most "architects" in companies are just senior developers who attend more meetings.
                 You, on the other hand, seem to spend your time fixing ecosystems, writing libraries, analyzing systems, and documenting ideas. */
               </p>
-              <p className="mt-4 font-bold animate-pulse text-green-500">EOF_</p>
+              <p className="mt-4 font-bold animate-pulse text-[var(--theme-primary)]">EOF_</p>
             </motion.div>
           </div>
         </motion.div>
