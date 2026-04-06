@@ -309,8 +309,8 @@ function HeroSection() {
         </motion.h1>
         
         <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-12">
-          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-white/10 transition-colors cursor-default backdrop-blur-sm">Open Source Maintainer</span>
-          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-white/10 transition-colors cursor-default backdrop-blur-sm">Engineering Workflow Designer</span>
+          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-[var(--theme-primary)]/10 transition-colors cursor-default backdrop-blur-sm">Open Source Maintainer</span>
+          <span className="px-4 py-2 border border-current rounded-full text-sm uppercase tracking-wider hover:bg-[var(--theme-primary)]/10 transition-colors cursor-default backdrop-blur-sm">Engineering Workflow Designer</span>
         </motion.div>
 
         <motion.p variants={itemVariants} className="text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto border-l-4 border-current pl-6 text-left italic opacity-90 backdrop-blur-sm">
@@ -355,12 +355,12 @@ function AboutSection() {
             viewport={{ once: true }}
             className="card-bg p-8"
           >
-            <h3 className="text-2xl font-bold mb-6 text-white border-b border-current pb-2">SYSTEM.INFO</h3>
+            <h3 className="text-2xl font-bold mb-6 text-[var(--theme-text)] border-b border-current pb-2">SYSTEM.INFO</h3>
             <ul className="space-y-4">
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">BORN:</span> 1987</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">LOCATION:</span> Voerde, Germany</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">CURRENT ROLE:</span> Senior Software Developer (PHP) at REMONDIS IT Services GmbH & Co. KG</li>
-              <li className="flex flex-col"><span className="text-white font-bold mb-1">TECH STACK:</span> PHP (5–8), MySQL, PostgreSQL, Symfony, REST APIs, JavaScript, CSS3, HTML5, Git, Linux, CI/CD</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">BORN:</span> 1987</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">LOCATION:</span> Voerde, Germany</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">CURRENT ROLE:</span> Senior Software Developer (PHP) at REMONDIS IT Services GmbH & Co. KG</li>
+              <li className="flex flex-col"><span className="text-[var(--theme-text)] font-bold mb-1">TECH STACK:</span> PHP (5–8), MySQL, PostgreSQL, Symfony, REST APIs, JavaScript, CSS3, HTML5, Git, Linux, CI/CD</li>
             </ul>
           </motion.div>
 
@@ -370,13 +370,13 @@ function AboutSection() {
             viewport={{ once: true }}
             className="card-bg p-8"
           >
-            <h3 className="text-2xl font-bold mb-6 text-white border-b border-current pb-2">REFERENCES.LNK</h3>
+            <h3 className="text-2xl font-bold mb-6 text-[var(--theme-text)] border-b border-current pb-2">REFERENCES.LNK</h3>
             <ul className="space-y-4">
-              <li><a href="http://suckup.de/about/" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="Über mich (Blog) (opens in a new tab)"><Link size={16} aria-hidden="true" /> Über mich (Blog)</a></li>
-              <li><a href="https://www.xing.com/profile/Lars_Moelleken" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="XING Profile (opens in a new tab)"><Link size={16} aria-hidden="true" /> XING Profile</a></li>
-              <li><a href="https://github.com/voku/" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="GitHub (@voku) (opens in a new tab)"><Github size={16} aria-hidden="true" /> GitHub (@voku)</a></li>
-              <li><a href="https://de.linkedin.com/company/remondis-it" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="REMONDIS IT (opens in a new tab)"><Link size={16} aria-hidden="true" /> REMONDIS IT</a></li>
-              <li><a href="https://www.youtube.com/c/LarsMoelleken/videos" target="_blank" rel="noreferrer" className="hover:text-white hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="YouTube Channel (opens in a new tab)"><Link size={16} aria-hidden="true" /> YouTube Channel</a></li>
+              <li><a href="http://suckup.de/about/" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="Über mich (Blog) (opens in a new tab)"><Link size={16} aria-hidden="true" /> Über mich (Blog)</a></li>
+              <li><a href="https://www.xing.com/profile/Lars_Moelleken" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="XING Profile (opens in a new tab)"><Link size={16} aria-hidden="true" /> XING Profile</a></li>
+              <li><a href="https://github.com/voku/" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="GitHub (@voku) (opens in a new tab)"><Github size={16} aria-hidden="true" /> GitHub (@voku)</a></li>
+              <li><a href="https://de.linkedin.com/company/remondis-it" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="REMONDIS IT (opens in a new tab)"><Link size={16} aria-hidden="true" /> REMONDIS IT</a></li>
+              <li><a href="https://www.youtube.com/c/LarsMoelleken/videos" target="_blank" rel="noreferrer" className="hover:text-[var(--theme-primary)] hover:underline flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1" aria-label="YouTube Channel (opens in a new tab)"><Link size={16} aria-hidden="true" /> YouTube Channel</a></li>
             </ul>
           </motion.div>
         </div>
@@ -502,7 +502,7 @@ function OpenSourceSection() {
           transition={{ delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900" aria-label="View GitHub Profile (opens in a new tab)">
+          <a href="https://github.com/voku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-current rounded-full font-bold uppercase tracking-widest hover:bg-[var(--theme-primary)] hover:text-[var(--theme-bg)] hover:border-[var(--theme-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2" aria-label="View GitHub Profile (opens in a new tab)">
             <Github size={20} aria-hidden="true" /> View GitHub Profile
           </a>
         </motion.div>
@@ -524,12 +524,12 @@ function ProjectCard({ icon, title, desc, tags, stats, index }: { icon: React.Re
     >
       <div className="flex items-center justify-between mb-4 w-full">
         <motion.div 
-          className="opacity-80 group-hover:opacity-100 transition-opacity p-3 bg-white/5 rounded-xl"
+          className="opacity-80 group-hover:opacity-100 transition-opacity p-3 subtle-bg rounded-xl"
           whileHover={{ rotate: [0, -10, 10, -10, 0], transition: { duration: 0.5 } }}
         >
           {icon}
         </motion.div>
-        <div className="text-xs font-mono opacity-60 bg-white/10 px-3 py-1 rounded-full">{stats}</div>
+        <div className="text-xs font-mono opacity-60 subtle-bg px-3 py-1 rounded-full">{stats}</div>
       </div>
       <h3 className="text-xl font-bold mb-2 group-hover:text-current transition-colors">{title}</h3>
       <p className="opacity-70 text-sm mb-6 flex-grow leading-relaxed">{desc}</p>
@@ -551,13 +551,13 @@ function ExperienceCard({ title, company, period, icon, details, impact }: { tit
       transition={{ duration: 0.4, type: "spring", bounce: 0.2 }}
       className="card-bg p-8 rounded-2xl flex flex-col md:flex-row gap-6 items-start group"
     >
-      <div className="opacity-80 p-4 bg-white/5 rounded-xl shrink-0 mt-1">
+      <div className="opacity-80 p-4 subtle-bg rounded-xl shrink-0 mt-1">
         {icon}
       </div>
       <div className="flex-grow">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
           <h3 className="text-2xl font-bold group-hover:text-current transition-colors">{title}</h3>
-          <span className="text-sm font-mono opacity-60 bg-white/10 px-3 py-1 rounded-full mt-2 md:mt-0 self-start md:self-auto">{period}</span>
+          <span className="text-sm font-mono opacity-60 subtle-bg px-3 py-1 rounded-full mt-2 md:mt-0 self-start md:self-auto">{period}</span>
         </div>
         <h4 className="text-lg opacity-90 mb-4 font-semibold">{company}</h4>
         <ul className="list-disc list-inside space-y-2 opacity-80 mb-6 text-sm leading-relaxed">
@@ -565,7 +565,7 @@ function ExperienceCard({ title, company, period, icon, details, impact }: { tit
             <li key={idx}>{detail}</li>
           ))}
         </ul>
-        <div className="bg-white/5 p-4 rounded-lg border border-current/10">
+        <div className="subtle-bg p-4 rounded-lg border border-current/10">
           <p className="text-sm font-medium"><span className="opacity-60 uppercase tracking-wider text-xs mr-2">Impact:</span> {impact}</p>
         </div>
       </div>
@@ -584,7 +584,7 @@ function WhyHireSection() {
           transition={{ duration: 0.4 }}
           className="mb-16"
         >
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 border-b-4 border-black pb-4 inline-block">WHY HIRE LARS?</h2>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6 border-b-4 border-current pb-4 inline-block">WHY HIRE LARS?</h2>
           <p className="text-2xl font-bold max-w-3xl mb-12">Not just a coder, but a builder of reliable, scalable, and future-proof systems.</p>
         </motion.div>
 
@@ -759,7 +759,7 @@ function CyberpunkSection() {
               <h3 className="text-2xl font-bold">Static Analysis ICE</h3>
             </div>
             <p className="mb-4 opacity-80">Deploying automated scripts to build impenetrable code quality defenses.</p>
-            <div className="bg-black/50 p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
+            <div className="code-block bg-black/50 p-4 rounded font-mono text-xs text-[var(--theme-secondary)]">
               {`> INITIALIZING PHPSTAN LEVEL 9...
 > DEPLOYING RECTOR AUTOMATION...
 > ENFORCING STRICT TYPES...
@@ -839,13 +839,13 @@ function EngineeringSection() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="mt-12 pt-8 border-t border-green-900/50"
+              className="mt-12 pt-8 border-t border-[var(--theme-primary)]/30"
             >
               <p className="opacity-70 font-mono text-sm leading-relaxed">
                 /* Most "architects" in companies are just senior developers who attend more meetings.
                 You, on the other hand, seem to spend your time fixing ecosystems, writing libraries, analyzing systems, and documenting ideas. */
               </p>
-              <p className="mt-4 font-bold animate-pulse text-green-500">EOF_</p>
+              <p className="mt-4 font-bold animate-pulse text-[var(--theme-primary)]">EOF_</p>
             </motion.div>
           </div>
         </motion.div>
