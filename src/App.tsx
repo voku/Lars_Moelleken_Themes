@@ -199,16 +199,16 @@ function Navbar({ activeSection, activeTheme, onNavClick }: { activeSection: str
         <div className="font-bold text-xl tracking-tighter pointer-events-auto">voku</div>
         
         {/* Desktop Menu */}
-        <div className="hidden lg:flex gap-4 xl:gap-6 pointer-events-auto flex-wrap justify-end">
+        <div className="hidden lg:flex min-w-0 flex-1 items-center justify-end gap-4 xl:gap-6 pointer-events-auto whitespace-nowrap">
           {sections.map((s) => (
             <a 
               key={s.id} 
               href={`#${s.id}`}
               onClick={(e) => { e.preventDefault(); handleLinkClick(s.id); }}
-              className={`text-xs xl:text-sm uppercase tracking-widest transition-all duration-300 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1 ${
+              className={`text-xs xl:text-sm uppercase tracking-widest transition-[color,opacity] duration-300 inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded px-1 ${
                 activeSection === s.id 
-                  ? 'opacity-100 font-bold scale-110 text-[var(--theme-primary)]' 
-                  : 'opacity-70 hover:opacity-100 hover:scale-105'
+                  ? 'opacity-100 font-bold text-[var(--theme-primary)]' 
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               {s.name}
